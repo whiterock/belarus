@@ -39,7 +39,17 @@ for ch in commandStream:
 
   # Whole Number Construction Mode
   of -1:
-    discard
+    case ch:
+    of '0'..'9':
+      # TODO
+      discard
+    of '.':
+      # TODO
+      discard
+    else:
+      operationMode = 0
+      # FIXME: We need to process this ch again in the operation mode
+      # i.e. the for loop approach like it is now is insufficient
 
   # Execution Mode
   of 0:

@@ -17,19 +17,39 @@ proc `$`(si: StackItem): string =
   of siList:
     result = "StackItem(siList, listVal: @[" & si.listVal.join(", ") & "])"
 
+
 # Initialize empty stack
 var stack = initDeque[StackItem]()
 
+#for i in 1..5:
+#  stack.addLast(StackItem(kind: siNumber, numberVal: i.toFloat))
+#stack.addLast(StackItem(kind: siList, listVal: @[9.1, 9.2, 9.3]))
 
-for i in 1..5:
-  stack.addLast(StackItem(kind: siNumber, numberVal: i.toFloat))
-
-stack.addLast(StackItem(kind: siList, listVal: @[9.1, 9.2, 9.3]))
-
+var commandStream = "4 2-" # TODO: Initialize this from register a
+var operationMode: int = 0
 
 #############
 # Main loop #
 #############
-while len(stack) > 0:
-  echo stack.popLast()
-  # stack.addFirst(StackItem(kind: siNumber, numberVal: 8.0)) # Test infinity
+for ch in commandStream:
+  case operationMode:
+  # Decimal Place Construction Mode
+  of low(int)..(-2):
+    discard
+
+  # Whole Number Construction Mode
+  of -1:
+    discard
+
+  # Execution Mode
+  of 0:
+    echo repr(ch)
+    case ch:
+    of '0'..'9':
+      discard
+    else:
+      discard
+  
+  # List Construction Mode
+  of 1..high(int):
+    discard

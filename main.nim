@@ -1,5 +1,8 @@
 import deques, strformat, strutils, streams, math
 
+# Used for comparisons
+let epsilon = 5.96e-08
+
 type
   StackItemKind = enum
     siNumber,        
@@ -17,17 +20,18 @@ proc `$`(si: StackItem): string =
   of siList:
     result = "StackItem(siList, listVal: @[" & si.listVal.join(", ") & "])"
 
+# Define what it means to be true for a StackItem of kind: siNumber
+converter toBool(x: StackItem): bool = 
+  case x.kind:
+  of siNumber: return abs(x.numberVal) < epsilon
+  of siList: raise newException(CatchableError, "siList has no truth value.")
 
 # Initialize empty stack
 # element [len(stack)] refers to the TOP of the stack
 var stack = initDeque[StackItem]()
 
-#for i in 1..5:
-#  stack.addLast(StackItem(kind: siNumber, numberVal: i.toFloat))
-#stack.addLast(StackItem(kind: siList, listVal: @[9.1, 9.2, 9.3]))
-
 #var commandStream = "4 2-" # TODO: Initialize this from register a
-let command = "423.15(3.14)C2.718+c"
+let command = "423.15(3.14)C2.718+c??~~c~"
 var commandStream = newStringStream(command)
 var operationMode: int = 0
 var register: array['a'..'z', StackItem] # yep crazy shit like that is part of nim-lang
@@ -88,11 +92,24 @@ while (var ch = readChar(commandStream); ch) != '\0':
       stack.addLast(register[ch])
     of 'A'..'Z':
       register[ch.toLowerAscii()] = stack.popLast()
+    of '?':
+      let a = stack.popLast()
+      case a.kind:
+      of siList:
+        if len(a.listVal) == 0: stack.addLast(StackItem(kind: siNumber, numberVal: 1.0))
+        else: stack.addLast(StackItem(kind: siNumber))
+      of siNumber:
+        if a: stack.addLast(StackItem(kind: siNumber, numberVal: 1.0))
+        else: stack.addLast(StackItem(kind: siNumber))
     of '+':
       let b = stack.popLast() # Intentionally b then a, since this is the order for - and /
       let a = stack.popLast()
       # FIXME: Check if not a number ...
       stack.addLast(StackItem(kind: siNumber, numberVal: a.numberVal + b.numberVal))
+    of '~':
+      case stack[^1].kind:
+      of siNumber: stack[^1].numberVal *= -1.0
+      of siList: stack[^1] = StackItem(kind: siList)
     else:
       discard
   

@@ -1,7 +1,7 @@
 import deques, strformat, strutils, streams, math
 
 # Used for comparisons
-let epsilon = 5.96e-08
+const epsilon = 5.96e-08
 
 type
   CommandStream = ref object
@@ -9,15 +9,9 @@ type
     command: string
 
 proc getChar(stream: CommandStream): char = 
-  result = '\0'
   if stream.position < stream.command.len:
     result = stream.command[stream.position]
-    stream.position += 1
-
-proc seqToString(str: seq[char]): string =
-  result = newStringOfCap(len(str))
-  for ch in str:
-    result.add(ch)
+    inc stream.position
 
 type
   StackItemKind = enum
@@ -31,24 +25,22 @@ type
 # Implements echo/repr for our StackItem
 proc `$`(si: StackItem): string =
   case si.kind:
-  of siNumber:
-    result = &"StackItem(siNumber, numberVal: {si.numberVal})"
-  of siList:
-    result = "StackItem(siList, listVal: @[" & si.listVal.join(", ") & "])"
+  of siNumber: result = &"StackItem(siNumber, numberVal: {si.numberVal:.9f})"
+  of siList: result = "StackItem(siList, listVal: @[" & si.listVal.join(", ") & "])"
 
 # Define what it means to be true for a StackItem of kind: siNumber
 converter toBool(x: StackItem): bool = 
   case x.kind:
-  of siNumber: return abs(x.numberVal) < epsilon
-  of siList: raise newException(CatchableError, "siList has no truth value.") #NOTE: willst wirklich f*kin exceptions einbauen?
+  of siNumber: return abs(x.numberVal) > epsilon
+  of siList: quit(1)
 
 # Initialize empty stack
 # element [len(stack)] refers to the TOP of the stack
 var stack = initDeque[StackItem]()
 
-#var commandStream = "4 2-" # TODO: Initialize this from register a
-var command = "423.15(3.14)C2.718+c??~~c~##__"
-command = "(9~)(8)(4!4$1+$@)@"
+# TODO: Initialize this from register a
+var command = "423.15(3.14)C2.718+c??~~c~##__&J$j|?&?|jc@/-0.681529>"
+# command = "(9~)(8)(4!4$1+$@)@"
 var commandStream = CommandStream(command: command)
 var operationMode: int = 0
 var register: array['a'..'z', StackItem] # yep crazy shit like that is part of nim-lang
@@ -67,10 +59,7 @@ while (var ch = getChar(commandStream); ch) != '\0':
   of low(int)..(-2):
     case ch:
     of '0'..'9':
-      var top = stack.popLast()
-
-      top.numberVal += parseFloat($ch) * pow(10, float(operationMode+1))
-      stack.addLast(top)
+      stack[^1].numberVal += parseFloat($ch) * pow(10, float(operationMode+1))
       operationMode -= 1
     of '.':
       stack.addLast(StackItem(kind: siNumber))
@@ -84,10 +73,7 @@ while (var ch = getChar(commandStream); ch) != '\0':
   of -1:
     case ch:
     of '0'..'9':
-      var top = stack.popLast()
-
-      top.numberVal = top.numberVal * 10 + parseFloat($ch)
-      stack.addLast(top)
+      stack[^1].numberVal = stack[^1].numberVal * 10 + parseFloat($ch)
     of '.':
       operationMode = -2
     else:
@@ -111,9 +97,9 @@ while (var ch = getChar(commandStream); ch) != '\0':
     of 'A'..'Z':
       register[ch.toLowerAscii()] = stack.popLast()
     of '=', '<', '>':
-      #NOTE: order: a = b, a < b a > b
-      var a = stack.popLast()
-      var b = stack.popLast()
+      #NOTE: order: a = b, a < b, a > b
+      let a = stack.popLast()
+      let b = stack.popLast()
       var erg: bool = false
 
       if a.kind == siNumber and b.kind == siNumber:
@@ -126,8 +112,7 @@ while (var ch = getChar(commandStream); ch) != '\0':
           erg = (a.numberVal - b.numberVal < -epsilon)
         else:
           discard
-
-      if a.kind == siList and b.kind == siList:
+      elif a.kind == siList and b.kind == siList:
         case ch:
         of '=':
           erg = ($a.listVal == $b.listVal)
@@ -139,7 +124,7 @@ while (var ch = getChar(commandStream); ch) != '\0':
           discard
 
       if a.kind == siNumber and b.kind == siList and ch == '<': erg = true
-      if a.kind == siList and b.kind == siNumber and ch == '>': erg = true
+      elif a.kind == siList and b.kind == siNumber and ch == '>': erg = true
 
       if erg:
         stack.addLast(StackItem(kind: siNumber, numberVal:1))
@@ -148,18 +133,39 @@ while (var ch = getChar(commandStream); ch) != '\0':
     of '?':
       let a = stack.popLast()
       case a.kind:
+      of siNumber:
+        if a: stack.addLast(StackItem(kind: siNumber))
+        else: stack.addLast(StackItem(kind: siNumber, numberVal: 1.0))
       of siList:
         if len(a.listVal) == 0: stack.addLast(StackItem(kind: siNumber, numberVal: 1.0))
         else: stack.addLast(StackItem(kind: siNumber))
-      of siNumber:
-        if a: stack.addLast(StackItem(kind: siNumber, numberVal: 1.0))
-        else: stack.addLast(StackItem(kind: siNumber))
-    of '+':
+    of '+', '-', '*', '/', '&', '|':
       let b = stack.popLast() # Intentionally b then a, since this is the order for - and /
       let a = stack.popLast()
-      # FIXME: Check if not a number ...
-      stack.addLast(StackItem(kind: siNumber, numberVal: a.numberVal + b.numberVal))
-    #TODO: other arithmetic operations
+      if a.kind == siNumber and b.kind == siNumber:
+        case ch
+        of '+':
+          stack.addLast(StackItem(kind: siNumber, numberVal: a.numberVal + b.numberVal))
+        of '-':
+          stack.addLast(StackItem(kind: siNumber, numberVal: a.numberVal - b.numberVal))
+        of '*':
+          stack.addLast(StackItem(kind: siNumber, numberVal: a.numberVal * b.numberVal))
+        of '/':
+          # Should we compare to epsilon here? We needn't but in the spirit?
+          if b.numberVal == 0: # This would be inf or nan, so according to spec => empty list
+            stack.addLast(StackItem(kind: siList))
+          else: 
+            stack.addLast(StackItem(kind: siNumber, numberVal: a.numberVal / b.numberVal))
+        of '&':
+          if a and b: stack.addLast(StackItem(kind: siNumber, numberVal: 1.0)) # True
+          else: stack.addLast(StackItem(kind: siNumber, numberVal: 0.0)) # False
+        of '|':
+          if a or b: stack.addLast(StackItem(kind: siNumber, numberVal: 1.0)) # True
+          else: stack.addLast(StackItem(kind: siNumber, numberVal: 0.0)) # False
+        else:
+          discard
+      else: # If one of them is not a number, push an empty list
+        stack.addLast(StackItem(kind: siList))
     of '~':
       case stack[^1].kind:
       of siNumber: stack[^1].numberVal *= -1.0
@@ -206,14 +212,13 @@ while (var ch = getChar(commandStream); ch) != '\0':
             stack.addLast(s[i])
     of '@':
       if stack[^1].kind == siList:
-        let l = stack.popLast()
-        commandstream.command = commandstream.command[0..commandstream.position-1] & l.listval.seqToString() & commandstream.command[commandstream.position..^1]
+        commandStream.command.insert(join(stack.popLast().listVal), commandStream.position)
+        #commandstream.command = commandstream.command[0..commandstream.position-1] & join(stack.popLast().listVal) & commandstream.command[commandstream.position..^1]
     of '\\':
       if stack[^1].kind == siList:
-        let l = stack.popLast()
-        commandstream.command = commandstream.command & l.listval.seqToString()
+        commandstream.command = commandstream.command & join(stack.popLast().listVal)
     of '#':
-      stack.addLast(Stackitem(kind: siNumber, numberVal: float(len(stack))))
+      stack.addLast(StackItem(kind: siNumber, numberVal: float(len(stack))))
     else:
       discard
   

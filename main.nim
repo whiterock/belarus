@@ -39,7 +39,7 @@ converter toBool(x: StackItem): bool =
 var stack = initDeque[StackItem]()
 
 # TODO: Initialize this from register a
-var command = "423.15(3.14)C2.718+c??~~c~##__&J$j|?&?|jc@/-0.681529>"
+var command = "423.15(3.14)C2.718+c??~~c~##__&J$j|?&?|jc@/-0.681529>3.4+%"
 # command = "(9~)(8)(4!4$1+$@)@"
 var commandStream = CommandStream(command: command)
 var operationMode: int = 0
@@ -173,17 +173,13 @@ while (var ch = getChar(commandStream); ch) != '\0':
     of '%':
       case stack[^1].kind:
       of siNumber:
-        var f = stack[^1].numberVal
-        var r = round(f)
-        var a = r - f
-
-        if f < r:
-          a = f - r
+        let f = stack[^1].numberVal
+        let r = round(f)
+        let a = r - f
 
         assert(abs(a) <= 0.5)
 
         stack.addLast(StackItem(kind:siNumber, numberVal: a))
-
       of siList: stack.addLast(StackItem(kind: siList))
     of '_':
       if stack[^1].kind == siNumber and stack[^1].numberVal > 0:

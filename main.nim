@@ -47,12 +47,14 @@ var register: array['a'..'z', StackItem] # yep crazy shit like that is part of n
 
 stack.addLast(StackItem(kind:siNumber))
 
+const debug = false
 #############
 # Main loop #
 #############
 while (var ch = getChar(commandStream); ch) != '\0':
-  echo commandStream.command
-  echo spaces(commandStream.position-1) & "\e[1;34m^\e[00m"
+  if debug:
+    echo commandStream.command
+    echo spaces(commandStream.position-1) & "\e[1;34m^\e[00m"
   case operationMode:
   # Decimal Place Construction Mode
   # REMARK: Fully implemented
@@ -239,12 +241,13 @@ while (var ch = getChar(commandStream); ch) != '\0':
       stack.addLast(top)
 
   # Debug stuff
-  echo "Stack:"
-  for i in countdown(len(stack)-1, 0):
-    echo "  ", stack[i]
+  if debug: 
+    echo "Stack:"
+    for i in countdown(len(stack)-1, 0):
+      echo "  ", stack[i]
 
-  echo "\nRegisters:"
-  for i in low(register)..high(register):
-    if register[i] != nil: echo "  ", i, ": ", register[i]
+    echo "\nRegisters:"
+    for i in low(register)..high(register):
+      if register[i] != nil: echo "  ", i, ": ", register[i]
 
-  echo "=".repeat(0x40)
+    echo "=".repeat(0x40)

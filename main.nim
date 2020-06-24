@@ -39,7 +39,7 @@ converter toBool(x: StackItem): bool =
 var stack = initDeque[StackItem]()
 
 # TODO: Initialize this from register a
-var command = "423.15(3.14)C2.718+c??~~c~##__&J$j|?&?|jc@/-0.681529>3.4+%"
+var command = "423.15(3.14)C2.718+c??~~c~##__&J$j|?&?|jc@/-0.681529>3.4+%''''"
 # command = "(9~)(8)(4!4$1+$@)@"
 var commandStream = CommandStream(command: command)
 var operationMode: int = 0
@@ -47,7 +47,7 @@ var register: array['a'..'z', StackItem] # yep crazy shit like that is part of n
 
 stack.addLast(StackItem(kind:siNumber))
 
-const debug = false
+const debug = true
 #############
 # Main loop #
 #############
@@ -217,6 +217,28 @@ while (var ch = getChar(commandStream); ch) != '\0':
         commandstream.command = commandstream.command & join(stack.popLast().listVal)
     of '#':
       stack.addLast(StackItem(kind: siNumber, numberVal: float(len(stack))))
+    of '\'':
+      let input = readLine(stdin)
+      if input[0] == '(' and input[^1] == ')':
+        var parens = 1
+        for i in 1..<len(input):
+          case input[i]:
+          of '(': parens += 1
+          of ')': parens -= 1
+          else: discard
+          if parens < 0:
+            # error, unbalanced paranthesis
+            stack.addLast(StackItem(kind: siList))
+            continue
+        # if the input appears to be a well-formed list, append
+        stack.addLast(StackItem(kind: siList, listVal: cast[seq[char]](input[1..^2])))
+      else:
+        try:
+          let number = parseFloat(input)
+          stack.addLast(StackItem(kind: siNumber, numberVal: number))
+        except:
+          # not a valid float
+          stack.addLast(StackItem(kind: siList))
     else:
       discard
   

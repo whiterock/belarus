@@ -1,4 +1,4 @@
-import deques, strformat, strutils, streams, math
+import deques, strformat, strutils, math, sequtils
 
 # Used for comparisons
 const epsilon = 5.96e-08
@@ -38,16 +38,18 @@ converter toBool(x: StackItem): bool =
 # element [len(stack)] refers to the TOP of the stack
 var stack = initDeque[StackItem]()
 
-# TODO: Initialize this from register a
-var command = "423.15(3.14)C2.718+c??~~c~##__&J$j|?&?|jc@/-0.681529>3.4+%''''"
-# command = "(9~)(8)(4!4$1+$@)@"
+var command = "a@"
+
 var commandStream = CommandStream(command: command)
 var operationMode: int = 0
 var register: array['a'..'z', StackItem] # yep crazy shit like that is part of nim-lang
 
-stack.addLast(StackItem(kind:siNumber))
+register['a'] = StackItem(kind: siList, listVal: toSeq("(Bienvenue!)\"((Input:)\"'@#!@)(#2-?(2!2$\"#!@)(#1+!@)(4!4$1+$@)@)#!@".items))
 
-const debug = true
+#NOTE: Error: unhandled exception: Empty deque. [IndexError]
+#		this is in spec "If an error occurs, the calculator stops its execution and gives an error message"
+
+const debug = false
 #############
 # Main loop #
 #############
@@ -239,6 +241,15 @@ while (var ch = getChar(commandStream); ch) != '\0':
         except:
           # not a valid float
           stack.addLast(StackItem(kind: siList))
+    of '"':
+      let l = stack.popLast()
+
+      if l.kind == siNumber:
+        echo l.numberVal
+      else:
+        echo l.listVal.join("")
+
+      #write it to output stream. if list characters directly, number appropriate with - and avoiding unnecessary digits ?? :)
     else:
       discard
   

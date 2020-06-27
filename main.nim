@@ -47,7 +47,7 @@ var register: array['a'..'z', StackItem] # yep crazy shit like that is part of n
 register['a'] = StackItem(kind: siList, listVal: toSeq("(Bienvenue!)\"((Input:)\"'@#!@)(#2-?(2!2$\"#!@)(#1+!@)(4!4$1+$@)@)#!@".items))
 
 #NOTE: Error: unhandled exception: Empty deque. [IndexError]
-#		this is in spec "If an error occurs, the calculator stops its execution and gives an error message"
+#       this is in spec "If an error occurs, the calculator stops its execution and gives an error message"
 
 const debug = false
 #############
@@ -221,26 +221,25 @@ while (var ch = getChar(commandStream); ch) != '\0':
       stack.addLast(StackItem(kind: siNumber, numberVal: float(len(stack))))
     of '\'':
       let input = readLine(stdin)
-      if input[0] == '(' and input[^1] == ')':
-        var parens = 1
-        for i in 1..<len(input):
+      try:
+        let number = parseFloat(input)
+        stack.addLast(StackItem(kind: siNumber, numberVal: number))
+      except:
+        # not a valid float
+        var parens = 0
+        for i in 0..<len(input):
           case input[i]:
-          of '(': parens += 1
-          of ')': parens -= 1
-          else: discard
-          if parens < 0:
-            # error, unbalanced paranthesis
-            stack.addLast(StackItem(kind: siList))
-            continue
-        # if the input appears to be a well-formed list, append
-        stack.addLast(StackItem(kind: siList, listVal: cast[seq[char]](input[1..^2])))
-      else:
-        try:
-          let number = parseFloat(input)
-          stack.addLast(StackItem(kind: siNumber, numberVal: number))
-        except:
-          # not a valid float
+            of '(': parens += 1
+            of ')': parens -= 1
+            else: discard
+
+        if parens != 0:
           stack.addLast(StackItem(kind: siList))
+        else:
+          if input[0] == '(' and input[^1] == ')':
+            stack.addLast(StackItem(kind: siList, listVal: cast[seq[char]](input[1..^2])))
+          else:
+            stack.addLast(StackItem(kind: siList, listVal: cast[seq[char]](input)))
     of '"':
       let l = stack.popLast()
 
@@ -248,8 +247,6 @@ while (var ch = getChar(commandStream); ch) != '\0':
         echo l.numberVal
       else:
         echo l.listVal.join("")
-
-      #write it to output stream. if list characters directly, number appropriate with - and avoiding unnecessary digits ?? :)
     else:
       discard
   

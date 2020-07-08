@@ -39,12 +39,18 @@ converter toBool(x: StackItem): bool =
 var stack = initDeque[StackItem]()
 
 var command = "a@"
+#var command = "1 1 5 4 1 5 4 5 5b@"
 
 var commandStream = CommandStream(command: command)
 var operationMode: int = 0
 var register: array['a'..'z', StackItem] # yep crazy shit like that is part of nim-lang
 
-register['a'] = StackItem(kind: siList, listVal: toSeq("(Bienvenue!)\"((Input:)\"'@#!@)(#2-?(2!2$\"#!@)(#1+!@)(4!4$1+$@)@)#!@".items))
+const repl = "(Bienvenue!)\"((Input:)\"'@#!@)(#2-?(2!2$\"#!@)(#1+!@)(4!4$1+$@)@)#!@"
+register['a'] = StackItem(kind: siList, listVal: cast[seq[char]](repl))
+
+# use like "1 1 5 4 1 5 4 5 5b@" x y z   x y z   x y z
+const triangle = "GHIJKLMNOol-2!*nk-2!*+mj-2!*+_Xil-2!*hk-2!*+gj-2!*+_Yoi-2!*nh-2!*+mg-2!*+_Zxy+z+2/Sssx-*sy-*sz-*_"
+register['b'] = StackItem(kind: siList, listVal: cast[seq[char]](triangle)) 
 
 #NOTE: Error: unhandled exception: Empty deque. [IndexError]
 #       this is in spec "If an error occurs, the calculator stops its execution and gives an error message"

@@ -45,13 +45,14 @@ var commandStream = CommandStream(command: command)
 var operationMode: int = 0
 var register: array['a'..'z', StackItem] # yep crazy shit like that is part of nim-lang
 
-const repl = "(Bienvenue!)\"((Input:)\"'@#!@)(#2-?(2!2$\"#!@)(#1+!@)(4!4$1+$@)@)#!@"
+const repl = "(Bienvenue!)\"((Input:)\"'@#!@) (#2-?(2!2$\"#!@)(#1+!@)(4!4$1+$@)@) #!@"
 register['a'] = StackItem(kind: siList, listVal: cast[seq[char]](repl))
 
 # use like "1 1 5 4 1 5 4 5 5b@" x y z   x y z   x y z
 const triangle = "GHIJKLMNOol-2!*nk-2!*+mj-2!*+_Xil-2!*hk-2!*+gj-2!*+_Yoi-2!*nh-2!*+mg-2!*+_Zxy+z+2/Sssx-*sy-*sz-*_"
 register['b'] = StackItem(kind: siList, listVal: cast[seq[char]](triangle)) 
 
+const multiple_triangles = "Pp>0"
 #NOTE: Error: unhandled exception: Empty deque. [IndexError]
 #       this is in spec "If an error occurs, the calculator stops its execution and gives an error message"
 
@@ -196,14 +197,14 @@ while (var ch = getChar(commandStream); ch) != '\0':
         stack[^1].numberVal = sqrt(stack[^1].numberVal)
     of '!':
       if stack[^1].kind == siNumber:
-        let l = stack.popLast()
-        var n = int(round(l.numberVal))-1
+        let v = stack.popLast()
+        var n = int(round(v.numberVal))-1
 
-        if n <= len(stack):
+        if n <= len(stack) and n > 0:
           var b = deepCopy(stack[^n])
           stack.addLast(b)
         else:
-          stack.addLast(l)
+          stack.addLast(v)
     of '$':
       let l = stack.popLast()
       if l.kind == siNumber:

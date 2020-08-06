@@ -38,7 +38,7 @@ converter toBool(x: StackItem): bool =
 # element [len(stack)] refers to the TOP of the stack
 var stack = initDeque[StackItem]()
 
-var command = "a@"
+var command = "5c@" # "a@"
 #var command = "1 1 5 4 1 5 4 5 5b@"
 
 var commandStream = CommandStream(command: command)
@@ -52,7 +52,9 @@ register['a'] = StackItem(kind: siList, listVal: cast[seq[char]](repl))
 const triangle = "GHIJKLMNOol-2!*nk-2!*+mj-2!*+_Xil-2!*hk-2!*+gj-2!*+_Yoi-2!*nh-2!*+mg-2!*+_Zxy+z+2/Sssx-*sy-*sz-*_"
 register['b'] = StackItem(kind: siList, listVal: cast[seq[char]](triangle)) 
 
-const multiple_triangles = "Pp>0"
+# loop, call 5 times e.g. with "5c@"
+const multiple_triangles = "1- ((Hello)\"c@) 3! 0 > $ @" #"0<((Hello)\")3!3$?$"
+register['c'] = StackItem(kind: siList, listVal: cast[seq[char]](multiple_triangles))
 #NOTE: Error: unhandled exception: Empty deque. [IndexError]
 #       this is in spec "If an error occurs, the calculator stops its execution and gives an error message"
 
@@ -60,8 +62,11 @@ const debug = false
 #############
 # Main loop #
 #############
+var i = 0
 while (var ch = getChar(commandStream); ch) != '\0':
-  if debug:
+  inc i
+  # if i == 50: break
+  if debug and ch != ' ':
     echo commandStream.command
     echo spaces(commandStream.position-1) & "\e[1;34m^\e[00m"
   case operationMode:
@@ -210,7 +215,7 @@ while (var ch = getChar(commandStream); ch) != '\0':
       if l.kind == siNumber:
         var n = int(round(l.numberVal))-1
 
-        if n <= len(stack):
+        if n <= len(stack) and n >= 0:
           var s : seq[StackItem]
           for i in 0..n-1:
             s.add(stack.popLast())
@@ -278,13 +283,13 @@ while (var ch = getChar(commandStream); ch) != '\0':
       stack.addLast(top)
 
   # Debug stuff
-  if debug: 
+  if debug and ch != ' ': 
     echo "Stack:"
     for i in countdown(len(stack)-1, 0):
       echo "  ", stack[i]
 
-    echo "\nRegisters:"
-    for i in low(register)..high(register):
-      if register[i] != nil: echo "  ", i, ": ", register[i]
+    #echo "\nRegisters:"
+    #for i in low(register)..high(register):
+    #  if register[i] != nil: echo "  ", i, ": ", register[i]
 
     echo "=".repeat(0x40)

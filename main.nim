@@ -38,7 +38,7 @@ converter toBool(x: StackItem): bool =
 # element [len(stack)] refers to the TOP of the stack
 var stack = initDeque[StackItem]()
 
-var command = "5c@" # "a@"
+var command = "a@"
 #var command = "1 1 5 4 1 5 4 5 5b@"
 
 var commandStream = CommandStream(command: command)
@@ -52,9 +52,15 @@ register['a'] = StackItem(kind: siList, listVal: cast[seq[char]](repl))
 const triangle = "GHIJKLMNOol-2!*nk-2!*+mj-2!*+_Xil-2!*hk-2!*+gj-2!*+_Yoi-2!*nh-2!*+mg-2!*+_Zxy+z+2/Sssx-*sy-*sz-*_"
 register['b'] = StackItem(kind: siList, listVal: cast[seq[char]](triangle)) 
 
-# loop, call 5 times e.g. with "5c@"
-const multiple_triangles = "1- ((Hello)\"c@) 3! 0 > $ @" #"0<((Hello)\")3!3$?$"
+# use like 1 1 5 4 1 5 4 5 5 1 1 5 4 1 5 4 5 5 2 c@
+#          | --------- coordinates ---------  |n|execute
+# stack like this x y z x y z x y z (n times) n
+# uses registers t for the sum, r to store n, p for recursion
+
+const multiple_triangles = "(r1-Rr0>(b@t+Tp@)(t\")(4!4$1+$@)@)P2!1>(0TRp@)((n must be bigger than 0, terminating)\")(4!4$1+$@)@"
 register['c'] = StackItem(kind: siList, listVal: cast[seq[char]](multiple_triangles))
+
+
 #NOTE: Error: unhandled exception: Empty deque. [IndexError]
 #       this is in spec "If an error occurs, the calculator stops its execution and gives an error message"
 

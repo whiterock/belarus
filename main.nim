@@ -61,6 +61,10 @@ const multiple_triangles = "(r1-Rr0>(b@t+Tp@)(t\")(4!4$1+$@)@)P2!1>(0TRp@)((n mu
 register['c'] = StackItem(kind: siList, listVal: cast[seq[char]](multiple_triangles))
 
 
+#2* a^2 * sqrt(3)
+const octahedron = "(Seitenlaenge des Oktaeders:)\"'2!2!*2*3_*\""
+register['d'] = StackItem(kind: siList, listVal: cast[seq[char]](octahedron))
+
 #NOTE: Error: unhandled exception: Empty deque. [IndexError]
 #       this is in spec "If an error occurs, the calculator stops its execution and gives an error message"
 

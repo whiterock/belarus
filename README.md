@@ -7,13 +7,13 @@ Wir haben uns entschieden den Interpreter in Nim (https://github.com/nim-lang/Ni
 Zuerst den Nim compiler installieren: https://nim-lang.org/install.html
 
 ```bash
-nim c main.nim
+nim c ibelarus.nim
 ```
 
 ## how to run
 
 ```bash
-./main
+./ibelarus
 ```
 
 Daraufhin erscheint die REPL welche in register A gespeichert ist.

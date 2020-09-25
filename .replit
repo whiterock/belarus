@@ -1,0 +1,2 @@
+language = "nim"
+run = "nim c -r ibelarus.nim"

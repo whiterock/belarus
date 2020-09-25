@@ -11,6 +11,10 @@ Zuerst den Nim compiler installieren: https://nim-lang.org/install.html
 nim c ibelarus.nim
 ```
 
+Falls das aus irgendeinem Grund nicht funktionieren sollte so befinden sich zwei Releases, einer für macOS (gestestet auf macOS 10.15) und einer für Linux im Ordner `releases`.
+
+Falls auch das Scheitern sollte kann das Programm online auf [![Run on Repl.it](https://repl.it/badge/github/whiterock/belarus)](https://repl.it/github/whiterock/belarus) kompiliert und ausgeführt werden!
+
 ## how to run
 
 ```bash

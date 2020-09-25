@@ -1,4 +1,5 @@
-# belarus
+# belarus 
+[![Run on Repl.it](https://repl.it/badge/github/whiterock/belarus)](https://repl.it/github/whiterock/belarus)
 
 Wir haben uns entschieden den Interpreter in Nim (https://github.com/nim-lang/Nim) zu schreiben, da @whiterock die Sprache für seine Hobbyprojekte verwendet und sie gut geeignet ist (außerdem machts halt irgendwie Spaß in Nim zu schreiben).
 

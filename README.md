@@ -49,6 +49,8 @@ Input:
 
 Die REPL verwendet den Stack zur Rekursion und laesst dem Benutzer dadurch alle anderen Register zur Verfuegung. Dieser Trade-off laesst dem Benutzer alle Register zur Verfuegung waehrend der zu bezahlende Preis ein Stack-Offset ist (bei Operation '#' in der REPL zu beachten).
 
+Die Alternative dazu stellt eine Rekursion mittels Register dar, wie sie beispielsweise beim Berechnen von mehreren Dreiecken (das Programm in Register C) verwendet wird. Dabei wird ein Teil des Codes in ein Register (in dem Fall das Register P) gespeichert und von diesem Register immer wieder geladen und ausgefuehrt.
+
 ## allocation of work
 
 Herr Weissenfels hat damals mit der Implementation des Stacks begonnen. Danach haben wir beide parallel verschiedene Operatoren implementiert, getestet und Fehler behoben. Herr Regen hat sich dann mit der Implementation der REPL beschäftigt; parallel dazu hat sich Herr Weissenfels mit der Implementation des Programms in register B beschäftigt bei der neue Fehler zum Vorschein kamen. Herr Regen hat dann noch die Programme in register B und C geschrieben. Tatsaechlich war der Entwicklungsprozess ineinander stark verflochten und eine genauere Aufteilung ist den Git-Logs zu entnehmen.

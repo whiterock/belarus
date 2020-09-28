@@ -44,3 +44,7 @@ Input:
 | B | Fläche eines Dreiecks mit 3 (3D) Koordinaten | `x1 y1 z1 x2 y2 z2 x3 y3 z3 b@` | `1 1 5 4 1 5 4 5 5b@` == `6.0` |
 | C | Fläche von n Dreiecken mir jeweils 3 (3D) Koordinaten | `x1 y1 z1 x2 y2 z2 x3 y3 z3`(n-times) + `n c@` | `1 1 5 4 1 5 4 5 5 1 1 5 4 1 5 4 5 5 2 c@` == 12.0 |
 | D | Oberfläche eines Oktaeders auf zwei Arten (normale Formel vs. mittels C) | `d@` (interaktiv) | `d@` und dann Seitenlänge eingeben, e.g. 5 liefert 86.60 |
+
+## design decisions
+
+Die REPL verwendet den Stack zur Rekursion und laesst dem Benutzer dadurch alle anderen Register zur Verfuegung. Dieser Trade-off laesst dem Benutzer alle Register zur Verfuegung waehrend der zu bezahlende Preis ein Stack-Offset ist (bei Operation '#' in der REPL zu beachten).

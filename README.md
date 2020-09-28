@@ -41,7 +41,7 @@ Input:
 | Register  | Programm | Usage | Beispiel |
 | ----------| -------- | ----- | -------- |
 | A | REPL | Auszuführende Befehle eingeben und Enter drücken. Wenn das Programm ausgeführt wird kommt man immer sofort in die REPL. | `8 3 +` == 11.0 | 
-| B | Fläche eines Dreiecks mit 3 (3D) Koordinaten | `x1 y1 z1 x2 y2 z2 x3 y3 z3 b@` | `1 1 5 4 1 5 4 5 5b@` == `6.0` |
+| B | Fläche eines Dreiecks mit 3 (3D) Koordinaten | `x1 y1 z1 x2 y2 z2 x3 y3 z3 b@` | `1 1 5 4 1 5 4 5 5b@` == 6.0 |
 | C | Fläche von n Dreiecken mir jeweils 3 (3D) Koordinaten | `x1 y1 z1 x2 y2 z2 x3 y3 z3`(n-times) + `n c@` | `1 1 5 4 1 5 4 5 5 1 1 5 4 1 5 4 5 5 2 c@` == 12.0 |
 | D | Oberfläche eines Oktaeders auf zwei Arten (normale Formel vs. mittels C) | `d@` (interaktiv) | `d@` und dann Seitenlänge eingeben, e.g. 5 liefert 86.60 |
 
@@ -53,6 +53,6 @@ Die Alternative dazu stellt eine Rekursion mittels Register dar, wie sie beispie
 
 ## allocation of work
 
-Herr Weissenfels hat damals mit der Implementation des Stacks begonnen. Danach haben wir beide parallel verschiedene Operatoren implementiert, getestet und Fehler behoben. Herr Regen hat sich dann mit der Implementation der REPL beschäftigt; parallel dazu hat sich Herr Weissenfels mit der Implementation des Programms in register B beschäftigt bei der neue Fehler zum Vorschein kamen. Herr Regen hat dann noch die Programme in register B und C geschrieben. Tatsaechlich war der Entwicklungsprozess ineinander stark verflochten und eine genauere Aufteilung ist den Git-Logs zu entnehmen.
+Herr Weissenfels hat damals mit der Implementation des Stacks und dem simplen Grundgerüst begonnen. Danach haben wir beide parallel verschiedene Operatoren implementiert, getestet und Fehler behoben. Herr Regen hat sich dann mit der Implementation der REPL beschäftigt; parallel dazu hat sich Herr Weissenfels mit der Implementation des Programms in register B beschäftigt bei der neue Fehler zum Vorschein kamen. Herr Regen hat dann noch die Programme in register C und D geschrieben. Tatsaechlich war der Entwicklungsprozess ineinander stark verflochten und eine genauere Aufteilung ist den Git-Logs zu entnehmen.
 
 Hiermit bestaetigen wir, dieses Programm persoenlich entwickelt zu haben.
